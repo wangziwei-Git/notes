@@ -275,6 +275,7 @@ Oauth2是一个标准的开放的授权协议，应用程序可以根据自己�
   - 本次使用：将独立运行的oauth服务导入到本工程中。
 - CAS：它是一个独立的认证系统
   - 提供了cas.war，是一个可以直接放到tomcat服务器运行的程序。
+  - ![image-20201221175349012](D:\Java笔记_Typora\我添加的img\image-20201221175349012.png)
 
 ![1608430308851](./总img/9/1608430308851.png)
 
@@ -304,7 +305,12 @@ Oauth2是一个标准的开放的授权协议，应用程序可以根据自己�
 
 - step2：在parent工程的pom文件中添加该模块
 
-![1566311687631](./总img/9/1566311687631.png)
+  ![1566311687631](./总img/9/1566311687631.png)
+
+````pom
+<!--在父类工程中添加oauth子工程-->
+<module>changgou-user-oauth</module>
+````
 
 - step3：目录结构如下【PS，导入工程成功后，该工程“高亮了”】
 
@@ -352,10 +358,6 @@ Oauth2有以下授权模式：
 
 
 
-
-
-
-
 ### 3.3.2 授权码授权实现
 
 #### 3.3.2.1 申请授权码
@@ -389,7 +391,7 @@ redirect_uri：跳转uri，当授权码申请成功后会跳转到此地址，�
 
 ![1565035586067](./总img/9/1565035586067.png)   
 
-点击Authorize,接下来返回授权码： 认证服务携带授权码跳转redirect_uri,code=k45iLY就是返回的授权码（每次生成的不一样）
+`点击Authorize`,接下来返回授权码： 认证服务携带授权码跳转redirect_uri,code=k45iLY就是返回的`授权码`（每次生成的不一样）
 
 ![1558181855325](./总img/9/1558181855325.png)
 
@@ -399,7 +401,7 @@ redirect_uri：跳转uri，当授权码申请成功后会跳转到此地址，�
 
 #### 3.3.2.2 申请令牌
 
-拿到授权码后，申请令牌。 **Post请求**：http://localhost:9001/oauth/token 参数如下： 
+`拿到授权码后，申请令牌`。 **Post请求**：http://localhost:9001/oauth/token 参数如下： 
 
 ```
 grant_type：授权类型，填写authorization_code，表示授权码模式 
@@ -415,9 +417,11 @@ redirect_uri：申请授权码时的跳转url，一定和申请授权码时用�
 
 以上测试使用postman完成： 
 
-http basic认证：    
+​	`http basic认证：`	    
 
 ![1558182132328](./总img/9/1558182132328.png)
+
+`在body中添加参数`
 
 ![1558182177167](./总img/9/1558182177167.png)
 
@@ -431,11 +435,13 @@ redirect_uri http://localhost
 
   
 
-点击发送： 申请令牌成功    
+`点击发送`： 申请令牌成功    
 
 ![](./总img/9/1562408718454.png)
 
-返回信如下:
+
+
+返回值如下:
 
 ```properties
 access_token：访问令牌，携带此令牌访问资源 
@@ -464,6 +470,8 @@ token：令牌
 
 如果令牌校验失败，会出现如下结果：
 
+`原因:可能多个空格或少copy了`
+
 ![1562409180948](./总img/9/1562409180948.png)
 
 如果令牌过期了，会如下如下结果：
@@ -476,13 +484,15 @@ token：令牌
 
 刷新令牌是当令牌快过期时重新生成一个令牌，它于授权码授权和密码授权生成令牌不同，刷新令牌不需要授权码 也不需要账号和密码，只需要一个刷新令牌、客户端id和客户端密码。 
 
-测试如下： Post：http://localhost:9001/oauth/token 
+1.测试如下： Post：http://localhost:9001/oauth/token 
 
-参数：    
+2.参数：    
 
 grant_type： 固定为 refresh_token 
 
-refresh_token：刷新令牌（注意不是access_token，而是refresh_token）  
+refresh_token：刷新令牌（注意不是access_token，而是refresh_token） 
+
+![image-20201221212042959](D:\Java笔记_Typora\我添加的img\image-20201221212042959.png) 
 
 ~~~properties
 grant_type refresh_token
@@ -503,13 +513,13 @@ refresh_token 使用申请令牌时同时生成的刷新令牌值
 
 密码模式（Resource Owner Password Credentials）与授权码模式的区别是申请令牌不再使用授权码，而是直接 通过用户名和密码即可申请令牌。 
 
-测试如下： 
+1.测试如下： 
 
 Post请求：http://localhost:9001/oauth/token 
 
-参数： 
+2.参数： (注意不要有空格)
 
-grant_type：密码模式授权填写password 
+grant_type：密码模式授权填写password
 
 username：账号 
 
@@ -533,9 +543,9 @@ password：密码
 
 Spring Security Oauth2提供校验令牌的端点，如下： 
 
-Get: http://localhost:9001/oauth/check_token?token=生成的token值 
+1.Get: http://localhost:9001/oauth/check_token?token=生成的token值 
 
-参数： 
+2.参数： 
 
 token：令牌 
 
@@ -581,11 +591,11 @@ id：这些字段是本认证服务在Spring Security基础上扩展的用户身
 
 刷新令牌是当令牌快过期时重新生成一个令牌，它于授权码授权和密码授权生成令牌不同，刷新令牌不需要授权码 也不需要账号和密码，只需要一个刷新令牌、客户端id和客户端密码。 
 
-测试如下： Post：http://localhost:9001/oauth/token 
+1.测试如下： Post：http://localhost:9001/oauth/token 
 
-参数：    
+2.参数：    
 
-grant_type： 固定为 refresh_token 
+grant_type： 固定为 refresh_token
 
 refresh_token：刷新令牌（注意不是access_token，而是refresh_token）    
 
@@ -656,7 +666,7 @@ RSA加密。
 
 
 
-生成证书文件以及公钥：
+生成证书文件以及公钥步骤：
 
 1、生成的证书文件：
 
@@ -703,12 +713,15 @@ RSA加密。
 
 Spring Security 提供对JWT的支持，本节我们使用Spring Security 提供的JwtHelper来创建JWT令牌，校验JWT令牌 等操作。 这里JWT令牌我们采用非对称算法进行加密，所以我们要先生成公钥和私钥。
 
-(1)生成密钥证书 下边命令生成密钥证书，采用RSA 算法每个证书包含公钥和私钥 
+(1)生成密钥证书 下边命令生成密钥证书，采用RSA 算法`每个证书包含公钥和私钥 `
 
-创建一个文件夹，在该文件夹下执行如下命令行：
+`以管理员身份进入cmd,然后进入"证书文件"保存的文件`
+
+![image-20201221221033982](D:\Java笔记_Typora\我添加的img\image-20201221221033982.png)
+
+2.在该文件夹下执行如下命令行：
 
 ```properties
-keytool -genkeypair -alias changgou66 -keyalg RSA -keypass changgou66 -keystore changgou66.jks -storepass changgou66
 
 keytool -genkeypair -alias changgou103 -keyalg RSA -keypass changgou103 -keystore changgou103.jks -storepass changgou103
 
@@ -727,7 +740,7 @@ Keytool 是一个java提供的证书管理工具
 -storepass：密钥库的访问密码 
 ```
 
-执行完上面命令后，会生成jks文件。例如：
+3.执行完上面命令后，会生成jks文件。例如：
 
 ![1570426751015](./总img/9/1570426751015.png)
 
@@ -769,11 +782,13 @@ openssl是一个加解密工具包，这里使用openssl来导出公钥信息。
 
 本教程配置在C:\OpenSSL-Win64\bin
 
-cmd进入changgou.jks文件所在目录执行如下命令(如下命令在windows下执行，会把-变成中文方式，请将它改成英文的-)： 
+`cmd进入`
+
+changgou.jks文件所在目录执行如下命令
+
+(如下命令在windows下执行，会把-变成中文方式，请将它改成英文的-)： 
 
 ```properties
-keytool -list -rfc --keystore changgou66.jks | openssl x509 -inform pem -pubkey
-
 keytool -list -rfc --keystore changgou103.jks | openssl x509 -inform pem -pubkey
 ```
 
@@ -797,29 +812,35 @@ xtOydpNKq8eb1/PGiLNolD4La2zf0/1dlcr5mkesV570NxRmU1tFm8Zd3MZlZmyv
 
 将生成的公钥添加到微服务工程中，本次我们先添加到changgou-service-user工程中，后期其他服务需要认证我们继续添加。
 
-- 将上边的公钥拷贝到文本public.key文件中，合并为一行,可以将它放到**需要实现授权认证的工程**中（例如：changgou-service-user工程）。
+- 将上边的公钥拷贝到文本public.key文件中，
+
+- 合并为一行,
+
+- 可以将它放到`需要实现授权认证的工程`中（`例如：changgou-service-user工程`）。
 
   ![1566383919885](./总img/9/1566383919885.png)
 
 #### 4.2.3.2 添加证书
 
-- 将changgou.jks文件放到认证授权的工程中（changgou-user-oauth工程中）
+- `将changgou.jks文件`放到`认证授权的工程`中
+
+- （`changgou-user-oauth工程中`）
 
   ![1566383973008](./总img/9/1566383973008.png)
 
 
 
-- 修改配置application.yml文件
+- `修改配置application.yml文件`
 
   ![1597127821604](./总img/9/1597127821604.png)
 
 
 
-### 4.2.4 令牌测试
+### 4.2.4 令牌测试[写到这里]
 
 (1)创建令牌数据
 
-运行在changgou-user-oauth工程中测试类com.changgou.token.CreateJwtTest，使用它来创建令牌信息，代码如下：
+`运行在changgou-user-oauth工程`中`测试类`com.changgou.token.CreateJwtTest，使用它来创建令牌信息，代码如下：
 
 ```java
 public class CreateJwtTest {
@@ -830,13 +851,13 @@ public class CreateJwtTest {
     @Test
     public void testCreateToken(){
         //证书文件路径
-        String key_location="changgou.jks";
+        String key_location="changgou103.jks";
         //秘钥库密码
-        String key_password="changgou";
+        String key_password="changgou103";
         //秘钥密码
-        String keypwd = "changgou";
+        String keypwd = "changgou103";
         //秘钥别名
-        String alias = "changgou";
+        String alias = "changgou103";
 
         //访问证书路径
         ClassPathResource resource = new ClassPathResource(key_location);
@@ -852,9 +873,9 @@ public class CreateJwtTest {
 
         //定义Payload
         Map<String, Object> tokenMap = new HashMap<>();
-        tokenMap.put("id", "1");
-        tokenMap.put("name", "itheima");
-        tokenMap.put("roles", "ROLE_VIP,ROLE_USER");
+        tokenMap.put("id", "1");  //唯一标识
+        tokenMap.put("name", "itheima");  //用户
+        tokenMap.put("roles", "ROLE_VIP,ROLE_USER");  //权限
 
         //生成Jwt令牌
         Jwt jwt = JwtHelper.encode(JSON.toJSONString(tokenMap), new RsaSigner(rsaPrivate));
@@ -947,7 +968,7 @@ public class ParseJwtTest {
 ![1566401945491](./总img/9/1566401945491.png)
 
 ~~~xml
-<!--OAuth2.0-->
+<!--OAuth2.0依赖-->
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-oauth2</artifactId>
@@ -958,7 +979,7 @@ PS：添加完依赖后，我们可以访问下用户服务，这个时候就拒
 
 ### 4.3.3 读取公钥
 
-在changgou-service-user工程中添加读取公钥配置类。
+`在changgou-service-user工程`中`添加`读取公钥`配置类`。
 
 ![1566386984227](./总img/9/1566386984227.png)
 
@@ -988,9 +1009,9 @@ import java.util.stream.Collectors;
  * 3:令牌的校验
  * @return 
  **/
-@Configuration
-@EnableResourceServer
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)// 激活方法上的PreAuthorize注解
+@Configuration //配置类注解
+@EnableResourceServer //开启Oauth2.0资源配置注解
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)// 激活方法上的PreAuthorize权限注解
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     //公钥
@@ -1023,8 +1044,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private String getPubKey() {
         Resource resource = new ClassPathResource(PUBLIC_KEY);
         try {
+            //读取文件
             InputStreamReader inputStreamReader = new InputStreamReader(resource.getInputStream());
+            //增强流
             BufferedReader br = new BufferedReader(inputStreamReader);
+            //公钥
             return br.lines().collect(Collectors.joining("\n"));
         } catch (IOException ioe) {
             return null;
@@ -1056,9 +1080,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
 ### 4.3.3 测试
 
-~~~properties
-Authorization bearer token值
-~~~
+#### 失败案例
 
 - 直接访问用户资源：`<http://localhost:18088/user>`
 
@@ -1085,6 +1107,8 @@ Authorization bearer token值
 # 5 认证开发-参考
 
 在给大家提供的oauth2.0工程中已有登录的认证代码，**这里我们只作为一个参考，我们可以自己去开发**。
+
+`就是说,已经写好用户登录认证功能在工程中,想代码就是下面这些(5和6重复了,做同样的功能)`
 
 ![1572080321965](./总img/9/1572080321965.png)
 
@@ -1452,15 +1476,15 @@ public class AuthController {
 ~~~java
 /**
  * @ClassName UserLoginService
- * @Description
- * @Author 传智播客
+ * @Description 接口
+ * @Author wzw
  * @Date 17:10 2019/10/26
  * @Version 2.1
  **/
 public interface UserLoginService {
     
     /**
-     * @author 栗子 
+     * @author wzw 
      * @Description 用户登录认证
      * @Date 17:11 2019/10/26
      * @param username      用户名
@@ -1482,15 +1506,17 @@ public interface UserLoginService {
 @Service
 public class UserLoginServiceImpl implements UserLoginService {
 
+    //注入RestTemplate:在启动类中写了bean
     @Autowired
     private RestTemplate restTemplate;
 
+    //负载均衡的客户端:获取动态端口
     @Autowired
     private LoadBalancerClient loadBalancerClient;
 
     /**
-     * @author 栗子
-     * @Description 用户登录认证
+     * @author wzw
+     * @Description 用户登录认证:调用Oauth2.0提供的接口(固定路径URL),生成令牌
      * @Date 17:11 2019/10/26
      * @param username      用户名
      * @param password      密码
@@ -1502,28 +1528,46 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Override
     public Map<String, Object> login(String username, String password, String clientId, String clientSecret, String grant_type) {
         try {
-            // 指定授权的url地址
+            // 1.指定授权的url地址(Oauth接口地址)
 //        String url = "http://localhost:9001/oauth/token";   // 硬编码
+            // 1.1 获取配置文件中的服务实例(对象)
             ServiceInstance serviceInstance = loadBalancerClient.choose("user-auth");
+            // 1.2 拿到uri:地址+端口(http://localhost:9001)
             String uri = serviceInstance.getUri().toString();
+            // 1.3 拼接生成令牌的固定路径:/oauth/token
             String url = uri + "/oauth/token";
 
-            // 封装请求数据
+            // 2.封装请求数据
+            // 2.1封装请求头
+            // 2.1.1对客户端信息(客户端id,客户端秘钥)进行Base64编码
             byte[] encode = Base64.getEncoder().encode((clientId + ":" + clientSecret).getBytes());
+            // 2.1.2 转为String类型
             String clientEncode = new String(encode, "UTF-8");
+            // 2.1.3 new LinkedMultiValueMap对象封装请求头
             LinkedMultiValueMap headers = new LinkedMultiValueMap();
+            // 2.1.4 将数据以key和value形式添加到LinkedMultiValueMap对象中(固定值,固定值+Base64编码后的信息)
+            // 注意:Basic后面要多一个空格(格式要求)
             headers.add("Authorization", "Basic " + clientEncode);
+            // 2.2封装请求体
             LinkedMultiValueMap body = new LinkedMultiValueMap();
+            // 2.2.1 密码授权方式:password
             body.add("grant_type", grant_type);
+            // 2.2.2 登录的用户账号
             body.add("username", username);
+            // 2.2.3 登录的用户密码
             body.add("password", password);
+            
+            // 3. new HttpEntity封装对象(请求头,请求体)
+            //有坑:body虽然是泛型,但只能要LinkedMultiValueMap封装数据
             HttpEntity requestEntity = new HttpEntity(body, headers);
             
-            // 发送请求
+            // 4.发送请求:(url路径,http的post请求方式,封装请求头+请求体的对象,响应的实体对象)
             ResponseEntity<Map> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
 
-            // 响应结果处理
+            // 5.响应结果处理
+            // 5.1获取生成的令牌
             Map<String, String> map = responseEntity.getBody();
+            // 5.2返回结果
             return map;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -1533,7 +1577,16 @@ public class UserLoginServiceImpl implements UserLoginService {
 }
 ~~~
 
+`注意`:启动类中加RestTemplate的@Bean
 
+![image-20201222155000903](D:\Java笔记_Typora\我添加的img\image-20201222155000903.png)
+
+```java
+@Bean(name = "restTemplate")
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+```
 
 ### 6.2.2 编写UserLoginController
 
@@ -1542,29 +1595,35 @@ public class UserLoginServiceImpl implements UserLoginService {
 @RequestMapping("/user")
 public class UserLoginController {
 
+    //获取配置文件中的值:客户端的账号
     @Value("${auth.clientId}")
     private String clientId;
 
+    //获取配置文件中的值:客户端的密码
     @Value("${auth.clientSecret}")
     private String clientSecret;
 
+    //获取service层
     @Autowired
     private UserLoginService userLoginService;
 
 
     /**
-     * @author 栗子
-     * @Description 用户登录
-     * @Date 17:09 2019/10/26
-     * @param username
-     * @param password
-     * @return java.util.Map<java.lang.String,java.lang.String>
-     **/
+     * @author wzw
+     * 用户登录
+     * @Date 16:22 2020/12/22
+     * @param username 账号
+     * @param password  密码
+     * @return java.util.Map<java.lang.String,java.lang.Object>
+    **/
     @RequestMapping("/login")
     public Map<String, Object> login(String username, String password){
-        String grant_type = "password"; // 密码授权方式
-        // 登录认证
+        // 固定参数:密码授权方式
+        String grant_type = "password";
+        
+        // 实现功能:登录认证(用户账号,用户密码,客户端账号,客户端密码,密码授权方式)
         Map<String, Object> map = userLoginService.login(username, password, clientId, clientSecret, grant_type);
+        //返回结果集
         return map;
     }
 }
@@ -1582,7 +1641,9 @@ public class UserLoginController {
 
   ![1572082813789](./总img/9/1572082813789.png)
 
-- 再次访问：
+- 再次访问：`<http://localhost:18088/user>`
+
+- Authorization
 
   ![1572082900355](./总img/9/1572082900355.png)
 
